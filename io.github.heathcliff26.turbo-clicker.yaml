@@ -20,6 +20,14 @@ modules:
       env:
         CARGO_HOME: /run/build/turbo-clicker/cargo
         CARGO_NET_OFFLINE: 'true'
+    build-commands:
+      - cargo fetch --manifest-path Cargo.toml --verbose
+      - cargo build --release --no-default-features --features flatpak
+      - install -Dm755 target/release/turbo-clicker $FLATPAK_DEST/bin/turbo-clicker
+      - desktop-file-edit --set-key Exec --set-value turbo-clicker packages/$FLATPAK_ID.desktop
+      - install -D packages/$FLATPAK_ID.desktop -t /app/share/applications/
+      - install -D packages/$FLATPAK_ID.svg -t /app/share/icons/hicolor/scalable/apps/
+      - install -D $FLATPAK_ID.metainfo.xml -t /app/share/metainfo/   
     sources:
       - type: git
         url: https://github.com/heathcliff26/turbo-clicker
@@ -29,11 +37,4 @@ modules:
           type: git
           tag-pattern: ^v([\d.]+)$
       - cargo-sources.json
-    build-commands:
-      - cargo fetch --manifest-path Cargo.toml --verbose
-      - cargo build --release --no-default-features --features flatpak
-      - install -Dm755 target/release/turbo-clicker $FLATPAK_DEST/bin/turbo-clicker
-      - desktop-file-edit --set-key Exec --set-value turbo-clicker packages/$FLATPAK_ID.desktop
-      - install -D packages/$FLATPAK_ID.desktop $FLATPAK_DEST/share/applications/$FLATPAK_ID.desktop
-      - install -D packages/$FLATPAK_ID.svg /app/share/icons/hicolor/scalable/apps/$FLATPAK_ID.svg
-      - install -D $FLATPAK_ID.metainfo.xml $FLATPAK_DEST/share/metainfo/$FLATPAK_ID.metainfo.xml
+
